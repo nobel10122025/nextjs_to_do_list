@@ -1,0 +1,18 @@
+.menu-bar-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    position: relative;
+}
+.primary-button {
+    /* background-color: #c08beb; */
+    background-color: #000;
+    color: white;
+    font-size: 16px;
+    outline: 0;
+    margin: 0;
+    padding: 10px 8px;
+    border-radius: 10px;
+    border: 0;
+    margin: 16px;
+}
