@@ -28,7 +28,6 @@ const sampleArray = [
 
 function ItemHolder() {
     const [item, setItem] = useState(sampleArray)
-    console.log("item", item)
     return (
         <div className="root">
             <div className="imageContainer">
