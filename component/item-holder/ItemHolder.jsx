@@ -1,9 +1,15 @@
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import './style.css'
+//Components
 import MenuBar from '@component/menu-bar/MenuBar';
 import FallbackScreen from '@component/fall-back-screen/fallbackScreen';
+
+// google auth
+import { signIn, signOut, useSession, getProviders } from "next-auth/react"
+
+//Styles
+import './style.css'
 
 const sampleArray = [
     {
@@ -34,15 +40,23 @@ const sampleArray = [
 ]
 
 function ItemHolder() {
+    const {data: session} = useSession()
     const [item, setItem] = useState(sampleArray)
     const [isSignedIn, setIsSignedIn] = useState(false)
+    const [providers, setProviders] = useState(null)
 
-    console.log("item", item)
+    useEffect(() => {
+        (async () => {
+            const response = await getProviders()
+            setProviders(response)
+        })()
+    }, [])
+
     return (
         <div className="root">
             <div className="imageContainer">
                 <img src="bg-desktop-light.jpg" alt='background-image' className="image" />
-                {isSignedIn ? <>
+                {session?.user ? <>
                     <MenuBar />
                     <div className="banner">
                         <div className="header">
@@ -73,11 +87,10 @@ function ItemHolder() {
                             <span className='clearLink'>Clear Completed</span>
                         </div>
                     </div>
-                </> : <FallbackScreen />}
+                </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} />}
             </div>
             <span className='subText'>Drag and Drop to reorder the list</span>
         </div>
     )
 }
-
 export default ItemHolder
