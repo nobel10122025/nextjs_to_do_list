@@ -6,7 +6,7 @@ import MenuBar from '@component/menu-bar/MenuBar';
 import FallbackScreen from '@component/fall-back-screen/fallbackScreen';
 
 // google auth
-import { signIn, signOut, useSession, getProviders } from "next-auth/react"
+import { useSession, getProviders } from "next-auth/react"
 
 //Styles
 import './style.css'
@@ -38,12 +38,18 @@ const sampleArray = [
         id: 5,
     }
 ]
+const ACTIVE = "Active"
+const COMPLETED = "Completed"
+const ALL = "All"
 
 function ItemHolder() {
-    const {data: session} = useSession()
-    const [item, setItem] = useState(sampleArray)
-    const [isSignedIn, setIsSignedIn] = useState(false)
+    const { data: session } = useSession()
+    const [items, setItems] = useState(sampleArray)
+    const [filteredItems, setFilteredItems] = useState(sampleArray)
+    const [enteredData, setEntered] = useState('')
     const [providers, setProviders] = useState(null)
+
+    console.log("session", session)
 
     useEffect(() => {
         (async () => {
@@ -51,6 +57,54 @@ function ItemHolder() {
             setProviders(response)
         })()
     }, [])
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            const response = await fetch('api/task')
+            console.log("response", response)
+            const data = response.json()
+            setItems(data)
+        }
+        if (session?.user.name) fetchItems()
+    }, [session?.user.id])
+
+    const addItem = () => {
+        let myNewTask = {}
+        if (enteredData === "") alert("please enter the task")
+        else {
+            myNewTask = {
+                id: new Date().getTime().toString(),
+                name: enteredData,
+                isCompleted: false
+            }
+            setItems([...items, myNewTask])
+            setFilteredItems([...items, myNewTask])
+            saveCreatedItem(myNewTask)
+        }
+    }
+
+    const saveCreatedItem = async (myNewTask) => {
+        const response = await fetch('api/task/create', { ...myNewTask, userId: session?.user.id })
+        console.log("responseresponse", response)
+    }
+
+    const clearCompletedItems = () => {
+        const updatedItems = items.filter((currentItem) => !currentItem.isCompleted)
+        setItems(updatedItems)
+        setFilteredItems(updatedItems)
+    }
+
+    const onTabSwitch = (tabName) => {
+        let updatedItems = [];
+        if (tabName === "Active") {
+            updatedItems = items.filter((currentItem) => !currentItem.isCompleted)
+        } else if (tabName === "Completed") {
+            updatedItems = items.filter((currentItem) => currentItem.isCompleted)
+        } else {
+            updatedItems = items
+        }
+        setFilteredItems(updatedItems)
+    }
 
     return (
         <div className="root">
@@ -63,10 +117,15 @@ function ItemHolder() {
                             <span className="heading">TODO</span>
                             <img src="icons/icon-sun.svg" />
                         </div>
-                        <input className="input" value="" onChange={(event) => { }} />
+                        <input
+                            className="input"
+                            value={enteredData}
+                            onChange={(event) => setEntered(event.target.value)}
+                            onKeyDown={(event) => event.key === "Enter" && addItem()}
+                        />
                     </div>
                     <div className="itemContainer">
-                        {item && item.map((currentItem) => {
+                        {filteredItems && filteredItems.map((currentItem) => {
                             const { name, isCompleted, id } = currentItem
                             return (
                                 <div className="itemHolder" key={id}>
@@ -78,13 +137,13 @@ function ItemHolder() {
                             )
                         })}
                         <div className='controls'>
-                            <span className='count'>{item.length} items left</span>
+                            <span className='count'>{items.length} items left</span>
                             <div className='tabContainer'>
-                                <span className='tabValue tabActive'>All</span>
-                                <span className='tabValue'>Active</span>
-                                <span className='tabValue'>Completed</span>
+                                <span className='tabValue tabActive' onClick={() => onTabSwitch(ALL)}>{ALL}</span>
+                                <span className='tabValue' onClick={() => onTabSwitch(ACTIVE)}>{ACTIVE}</span>
+                                <span className='tabValue' onClick={() => onTabSwitch(COMPLETED)}>{COMPLETED}</span>
                             </div>
-                            <span className='clearLink'>Clear Completed</span>
+                            <span className='clearLink' onClick={clearCompletedItems}>Clear Completed</span>
                         </div>
                     </div>
                 </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} />}
