@@ -7,7 +7,7 @@ const taskSchema = new Schema({
         required: [true, "ID is required!"]
     },
     task_name: {
-        type: String,
+        type: Array,
         unique: [true, "Email already exists!"],
         required: [true, "Email is required!"]
     },
@@ -16,8 +16,8 @@ const taskSchema = new Schema({
         required: [true, "Status is required"]
     },
     user_id: {
-        type: String,
-        required: [true, "User_id is required!"]
+        type: Schema.Types.ObjectId,
+        ref: 'User',
     }
 })
 

@@ -11,45 +11,44 @@ import { useSession, getProviders } from "next-auth/react"
 //Styles
 import './style.css'
 
-const sampleArray = [
-    {
-        name: "Jog for 10 mins",
-        isCompleted: true,
-        id: 1,
-    },
-    {
-        name: "Complete fronend mentor",
-        isCompleted: true,
-        id: 2,
-    },
-    {
-        name: "take a nap",
-        isCompleted: false,
-        id: 3,
-    },
-    {
-        name: "Read for a 1 hour",
-        isCompleted: true,
-        id: 4,
-    },
-    {
-        name: "Complete DS one per day",
-        isCompleted: false,
-        id: 5,
-    }
-]
+// const sampleArray = [
+//     {
+//         name: "Jog for 10 mins",
+//         isCompleted: true,
+//         id: 1,
+//     },
+//     {
+//         name: "Complete fronend mentor",
+//         isCompleted: true,
+//         id: 2,
+//     },
+//     {
+//         name: "take a nap",
+//         isCompleted: false,
+//         id: 3,
+//     },
+//     {
+//         name: "Read for a 1 hour",
+//         isCompleted: true,
+//         id: 4,
+//     },
+//     {
+//         name: "Complete DS one per day",
+//         isCompleted: false,
+//         id: 5,
+//     }
+// ]
 const ACTIVE = "Active"
 const COMPLETED = "Completed"
 const ALL = "All"
 
 function ItemHolder() {
     const { data: session } = useSession()
-    const [items, setItems] = useState(sampleArray)
-    const [filteredItems, setFilteredItems] = useState(sampleArray)
+    const [items, setItems] = useState([])
+    const [filteredItems, setFilteredItems] = useState([])
     const [enteredData, setEntered] = useState('')
     const [providers, setProviders] = useState(null)
-
-    console.log("session", session)
+    const [activeTab, setActiveTab] = useState(ALL)
 
     useEffect(() => {
         (async () => {
@@ -61,12 +60,13 @@ function ItemHolder() {
     useEffect(() => {
         const fetchItems = async () => {
             const response = await fetch('api/task')
-            console.log("response", response)
             const data = response.json()
+            console.log("response", data)
             setItems(data)
         }
+        console.log("session session", session)
         if (session?.user.name) fetchItems()
-    }, [session?.user.id])
+    }, [session?.user.name])
 
     const addItem = () => {
         let myNewTask = {}
@@ -77,15 +77,18 @@ function ItemHolder() {
                 name: enteredData,
                 isCompleted: false
             }
-            setItems([...items, myNewTask])
-            setFilteredItems([...items, myNewTask])
-            saveCreatedItem(myNewTask)
+            console.log("item item item", items)
+            const updatedItems = items && items.length > 0 ? [...items, myNewTask] : [myNewTask]
+            setItems(updatedItems)
+            setFilteredItems(updatedItems)
+            saveCreatedItem(updatedItems)
         }
     }
 
     const saveCreatedItem = async (myNewTask) => {
-        const response = await fetch('api/task/create', { ...myNewTask, userId: session?.user.id })
-        console.log("responseresponse", response)
+        const payload = { ...myNewTask, userId: session?.user.id }
+        console.log("payload payload ", payload)
+        await fetch('api/task/create', { method: "POST", body: JSON.stringify(payload) })
     }
 
     const clearCompletedItems = () => {
@@ -96,13 +99,14 @@ function ItemHolder() {
 
     const onTabSwitch = (tabName) => {
         let updatedItems = [];
-        if (tabName === "Active") {
+        if (tabName === ACTIVE) {
             updatedItems = items.filter((currentItem) => !currentItem.isCompleted)
-        } else if (tabName === "Completed") {
+        } else if (tabName === COMPLETED) {
             updatedItems = items.filter((currentItem) => currentItem.isCompleted)
         } else {
             updatedItems = items
         }
+        setActiveTab(tabName)
         setFilteredItems(updatedItems)
     }
 
@@ -125,6 +129,7 @@ function ItemHolder() {
                         />
                     </div>
                     <div className="itemContainer">
+                        {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false}/>}
                         {filteredItems && filteredItems.map((currentItem) => {
                             const { name, isCompleted, id } = currentItem
                             return (
@@ -139,14 +144,14 @@ function ItemHolder() {
                         <div className='controls'>
                             <span className='count'>{items.length} items left</span>
                             <div className='tabContainer'>
-                                <span className='tabValue tabActive' onClick={() => onTabSwitch(ALL)}>{ALL}</span>
-                                <span className='tabValue' onClick={() => onTabSwitch(ACTIVE)}>{ACTIVE}</span>
-                                <span className='tabValue' onClick={() => onTabSwitch(COMPLETED)}>{COMPLETED}</span>
+                                <span className={`tabValue ${activeTab === ALL && "tabActive"}`} onClick={() => onTabSwitch(ALL)}>{ALL}</span>
+                                <span className={`tabValue ${activeTab === ACTIVE && "tabActive"}`} onClick={() => onTabSwitch(ACTIVE)}>{ACTIVE}</span>
+                                <span className={`tabValue ${activeTab === COMPLETED && "tabActive"}`} onClick={() => onTabSwitch(COMPLETED)}>{COMPLETED}</span>
                             </div>
                             <span className='clearLink' onClick={clearCompletedItems}>Clear Completed</span>
                         </div>
                     </div>
-                </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} />}
+                </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true}/>}
             </div>
             <span className='subText'>Drag and Drop to reorder the list</span>
         </div>

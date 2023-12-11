@@ -3,6 +3,7 @@ import Task from "@model/task";
 
 export const POST = async (req) => {
     const { userId, name, isCompleted, id } = await req.json()
+    console.log("userID", userId, name, isCompleted, id)
     try {
         await connectToDB()
         const newTask = new Task({
