@@ -10,6 +10,7 @@ import { useSession, getProviders } from "next-auth/react"
 
 //Styles
 import './style.css'
+import { deserializeList } from './util';
 
 // const sampleArray = [
 //     {
@@ -50,6 +51,8 @@ function ItemHolder() {
     const [providers, setProviders] = useState(null)
     const [activeTab, setActiveTab] = useState(ALL)
 
+    console.log("items items", items)
+
     useEffect(() => {
         (async () => {
             const response = await getProviders()
@@ -59,26 +62,29 @@ function ItemHolder() {
 
     useEffect(() => {
         const fetchItems = async () => {
-            const response = await fetch('api/task')
-            const data = response.json()
-            console.log("response", data)
-            setItems(data)
+            const payload = {
+                userId: session?.user.id
+            }
+            const res = await fetch('api/task', { method: "POST", body: JSON.stringify(payload) })
+            const data = await res.json()
+            const dataToSet = deserializeList(data)
+            setFilteredItems(dataToSet)
+            setItems(dataToSet)
         }
-        console.log("session session", session)
         if (session?.user.name) fetchItems()
     }, [session?.user.name])
 
     const addItem = () => {
-        let myNewTask = {}
+        let new_task = {}
         if (enteredData === "") alert("please enter the task")
         else {
-            myNewTask = {
+            new_task = {
                 id: new Date().getTime().toString(),
                 name: enteredData,
                 isCompleted: false
             }
             console.log("item item item", items)
-            const updatedItems = items && items.length > 0 ? [...items, myNewTask] : [myNewTask]
+            const updatedItems = items && items.length > 0 ? [...items, new_task] : [new_task]
             setItems(updatedItems)
             setFilteredItems(updatedItems)
             saveCreatedItem(updatedItems)
@@ -86,9 +92,12 @@ function ItemHolder() {
     }
 
     const saveCreatedItem = async (myNewTask) => {
-        const payload = { ...myNewTask, userId: session?.user.id }
+        console.log("myNewTask myNewTask", myNewTask[0])
+        const payload = { ...myNewTask[0], userId: session?.user.id }
         console.log("payload payload ", payload)
-        await fetch('api/task/create', { method: "POST", body: JSON.stringify(payload) })
+        await fetch('api/task/create', { method: "POST", body: JSON.stringify(payload) }).then((response) => {
+            if (response.status === "ok") console.log("this reached here", response.status)
+        })
     }
 
     const clearCompletedItems = () => {
@@ -129,7 +138,7 @@ function ItemHolder() {
                         />
                     </div>
                     <div className="itemContainer">
-                        {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false}/>}
+                        {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false} />}
                         {filteredItems && filteredItems.map((currentItem) => {
                             const { name, isCompleted, id } = currentItem
                             return (
@@ -141,7 +150,7 @@ function ItemHolder() {
                                 </div>
                             )
                         })}
-                        <div className='controls'>
+                        {items && items.length !== 0 && <div className='controls'>
                             <span className='count'>{items.length} items left</span>
                             <div className='tabContainer'>
                                 <span className={`tabValue ${activeTab === ALL && "tabActive"}`} onClick={() => onTabSwitch(ALL)}>{ALL}</span>
@@ -149,9 +158,9 @@ function ItemHolder() {
                                 <span className={`tabValue ${activeTab === COMPLETED && "tabActive"}`} onClick={() => onTabSwitch(COMPLETED)}>{COMPLETED}</span>
                             </div>
                             <span className='clearLink' onClick={clearCompletedItems}>Clear Completed</span>
-                        </div>
+                        </div>}
                     </div>
-                </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true}/>}
+                </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true} />}
             </div>
             <span className='subText'>Drag and Drop to reorder the list</span>
         </div>
