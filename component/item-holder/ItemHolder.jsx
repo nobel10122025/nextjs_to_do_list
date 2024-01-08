@@ -66,6 +66,7 @@ function ItemHolder() {
                 userId: session?.user.id
             }
             const res = await fetch('api/task', { method: "POST", body: JSON.stringify(payload) })
+            console.log("response ===>", res)
             const data = await res.json()
             const dataToSet = deserializeList(data)
             setFilteredItems(dataToSet)
