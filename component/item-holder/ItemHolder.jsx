@@ -12,33 +12,6 @@ import { useSession, getProviders } from "next-auth/react"
 import './style.css'
 import { deserializeList } from './util';
 
-// const sampleArray = [
-//     {
-//         name: "Jog for 10 mins",
-//         isCompleted: true,
-//         id: 1,
-//     },
-//     {
-//         name: "Complete fronend mentor",
-//         isCompleted: true,
-//         id: 2,
-//     },
-//     {
-//         name: "take a nap",
-//         isCompleted: false,
-//         id: 3,
-//     },
-//     {
-//         name: "Read for a 1 hour",
-//         isCompleted: true,
-//         id: 4,
-//     },
-//     {
-//         name: "Complete DS one per day",
-//         isCompleted: false,
-//         id: 5,
-//     }
-// ]
 const ACTIVE = "Active"
 const COMPLETED = "Completed"
 const ALL = "All"
@@ -93,8 +66,8 @@ function ItemHolder() {
     }
 
     const saveCreatedItem = async (myNewTask) => {
-        console.log("myNewTask myNewTask", myNewTask[0])
-        const payload = { ...myNewTask[0], userId: session?.user.id }
+        console.log("myNewTask myNewTask", myNewTask[-1])
+        const payload = { ...myNewTask[-1], userId: session?.user.id }
         console.log("payload payload ", payload)
         await fetch('api/task/create', { method: "POST", body: JSON.stringify(payload) }).then((response) => {
             if (response.status === "ok") console.log("this reached here", response.status)

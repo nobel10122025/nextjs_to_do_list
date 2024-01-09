@@ -3,6 +3,7 @@ import Task from "@model/task";
 
 export const POST = async (req) => {
   const { userID } = req.json;
+  console.log("user id ", userID, typeof userID)
   try {
     await connectToDB();
     let tasks = await Task.find({ user_id: userID }).populate('user_id');
