@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 
-import { createItems, getSavedItems } from '@component/apis/apis';
+import { completedItems, createItems, getSavedItems } from '@component/apis/apis';
 
 //Components
 import MenuBar from '@component/menu-bar/MenuBar';
@@ -12,7 +12,7 @@ import { useSession, getProviders } from "next-auth/react"
 
 //Styles
 import './style.css'
-import { deserializeList } from './util';
+import { deserializeList, deserializeListItem } from './util';
 
 const ACTIVE = "Active"
 const COMPLETED = "Completed"
@@ -37,6 +37,7 @@ function ItemHolder() {
         const fetchItems = async () => {
             const res = await getSavedItems(session?.user.id)
             const data = await res.json()
+            console.log("data ", data)
             const dataToSet = deserializeList(data)
             setFilteredItems(dataToSet)
             setItems(dataToSet)
@@ -62,6 +63,21 @@ function ItemHolder() {
     const saveCreatedItem = async (myNewTask) => {
         const payload = { ...myNewTask.at(-1), userId: session?.user.id }
         createItems(payload)
+    }
+
+    const markAtDone = async (taskId, isCompleted) => {
+        const updatedTask = await completedItems(taskId, !isCompleted)
+        let updatedTaskJson = await updatedTask.json()
+        updatedTaskJson = deserializeListItem(updatedTaskJson)
+        const updatedList =  items.reduce((reqArray, currentItem) => {
+            if (currentItem.id == updatedTaskJson.id) {
+                reqArray.push(updatedTaskJson)
+            }
+            else reqArray.push(currentItem)
+            return reqArray
+        }, [])
+        setItems(updatedList)
+        setFilteredItems(updatedList)
     }
 
     const clearCompletedItems = () => {
@@ -103,13 +119,13 @@ function ItemHolder() {
                     </div>
                     <div className="itemContainer">
                         {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false} />}
-                        {filteredItems && filteredItems.map((currentItem, index) => {
-                            const { name, isCompleted } = currentItem
+                        {filteredItems && filteredItems.map((currentItem) => {
+                            const { name, isCompleted, id } = currentItem
                             return (
-                                <div className="itemHolder" key={index}>
-                                    {isCompleted ? <div className="icon">
+                                <div className="itemHolder" key={id}>
+                                    {isCompleted ? <div className="icon" onClick={() => markAtDone(id, isCompleted)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9"><path fill="none" stroke="#FFF" strokeWidth="2" d="M1 4.304L3.696 7l6-6" /></svg>
-                                    </div> : <div className="uncheckIcon"></div>}
+                                    </div> : <div className="uncheckIcon" onClick={() => markAtDone(id, isCompleted)}></div>}
                                     <span className={"name"}>{name}</span>
                                 </div>
                             )
