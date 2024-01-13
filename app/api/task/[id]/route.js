@@ -1,14 +1,11 @@
 import { connectToDB } from "@utils/database";
 import Task from "@model/task";
 
-export const POST = async (req) => {
-  const { userID } = req.json;
-  console.log("user id ", userID, typeof userID)
+export const GET = async (req, { params }) => {
   try {
     await connectToDB();
-    let tasks = await Task.find({ user_id: userID }).populate('user_id');
-    console.log("takss", tasks);
-    if (!tasks) tasks = { data: [] };
+    let tasks = await Task.find({ user_id: params.id });
+    if (!tasks) tasks = [];
     const response = new Response(JSON.stringify(tasks), {
       status: 200,
     });

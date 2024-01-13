@@ -1,6 +1,8 @@
 "use client"
 import { useEffect, useState } from 'react';
 
+import { createItems, getSavedItems } from '@component/apis/apis';
+
 //Components
 import MenuBar from '@component/menu-bar/MenuBar';
 import FallbackScreen from '@component/fall-back-screen/fallbackScreen';
@@ -24,8 +26,6 @@ function ItemHolder() {
     const [providers, setProviders] = useState(null)
     const [activeTab, setActiveTab] = useState(ALL)
 
-    console.log("items items", items)
-
     useEffect(() => {
         (async () => {
             const response = await getProviders()
@@ -35,11 +35,7 @@ function ItemHolder() {
 
     useEffect(() => {
         const fetchItems = async () => {
-            const payload = {
-                userId: session?.user.id
-            }
-            const res = await fetch('api/task', { method: "POST", body: JSON.stringify(payload) })
-            console.log("response ===>", res)
+            const res = await getSavedItems(session?.user.id)
             const data = await res.json()
             const dataToSet = deserializeList(data)
             setFilteredItems(dataToSet)
@@ -53,11 +49,9 @@ function ItemHolder() {
         if (enteredData === "") alert("please enter the task")
         else {
             new_task = {
-                id: new Date().getTime().toString(),
                 name: enteredData,
                 isCompleted: false
             }
-            console.log("item item item", items)
             const updatedItems = items && items.length > 0 ? [...items, new_task] : [new_task]
             setItems(updatedItems)
             setFilteredItems(updatedItems)
@@ -66,12 +60,8 @@ function ItemHolder() {
     }
 
     const saveCreatedItem = async (myNewTask) => {
-        console.log("myNewTask myNewTask", myNewTask[-1])
-        const payload = { ...myNewTask[-1], userId: session?.user.id }
-        console.log("payload payload ", payload)
-        await fetch('api/task/create', { method: "POST", body: JSON.stringify(payload) }).then((response) => {
-            if (response.status === "ok") console.log("this reached here", response.status)
-        })
+        const payload = { ...myNewTask.at(-1), userId: session?.user.id }
+        createItems(payload)
     }
 
     const clearCompletedItems = () => {
@@ -113,10 +103,10 @@ function ItemHolder() {
                     </div>
                     <div className="itemContainer">
                         {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false} />}
-                        {filteredItems && filteredItems.map((currentItem) => {
-                            const { name, isCompleted, id } = currentItem
+                        {filteredItems && filteredItems.map((currentItem, index) => {
+                            const { name, isCompleted } = currentItem
                             return (
-                                <div className="itemHolder" key={id}>
+                                <div className="itemHolder" key={index}>
                                     {isCompleted ? <div className="icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9"><path fill="none" stroke="#FFF" strokeWidth="2" d="M1 4.304L3.696 7l6-6" /></svg>
                                     </div> : <div className="uncheckIcon"></div>}
