@@ -1,11 +1,8 @@
 "use client"
 import { signIn } from 'next-auth/react'
-// import { signIn } from 'next-auth/react'
 import './style.css'
 
 function FallbackScreen({ providers, title, showButton }) {
-    // const { signIn } = useSession()
-    console.log("this is here", providers, Object.values(providers))
     return (
         <div className='fallback-container'>
             <div className='fallback-root'>

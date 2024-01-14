@@ -5,16 +5,16 @@
     flex-direction: column;
 }
 .imageContainer {
-    position: relative;
-    width: 100%
+    width: 100%;
+    background-repeat: no-repeat !important;
 }
 .image {
     opacity: 0.75;
-    position: absolute;
+    /* position: absolute; */
     z-index: 0
 }
 .banner {
-    position: absolute;
+    /* position: absolute; */
     z-index: 15;
     width: 100%;
     margin: 70px auto 20px auto
@@ -44,13 +44,10 @@
     height: 40px
 }
 .itemContainer {
-    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 100vw;
-    height: 100vh;
 }
 .itemHolder {
     background-color: #FFF;
@@ -88,10 +85,8 @@
     color: hsl(192, 100%, 67%)
 }
 .subText {
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
+   margin-top: 20px;
+   text-align: center
 }
 .count , .clearLink {
     color:  hsl(236, 9%, 61%)
