@@ -11,10 +11,16 @@ export const createItems = async (payload) => {
   return res;
 };
 
-export const completedItems = async (id, payload) => {
+export const updatedCurrentItem = async (id, payload) => {
   const res = await fetch(`api/task/${id}`, {
     method: "PATCH",
-    body: JSON.stringify({ isCompleted: payload }),
+    body: JSON.stringify(payload),
   });
   return res;
+};
+
+export const deleteItem = async (id) => {
+  await fetch(`api/task/${id}`, {
+    method: "DELETE"
+  });
 };

@@ -59,7 +59,18 @@
     border-radius: 4px;
     border-bottom: 1px solid #D3D3D3;
     color: hsl(235, 19%, 35%);
-    display: flex
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.itemNames {
+    display: flex;
+    align-items: center;
+}
+.itemEdits {
+    width: 10%;
+    display: flex;
+    justify-content: space-between;
 }
 .controls {
     background-color: #FFF;
@@ -103,4 +114,10 @@
     height: 18px;
     border-radius: 50%;
     border: 1px solid #d3d3d3
+}
+.editIcon {
+    color: #d3d3d3;
+}
+.editIcon:hover {
+    color: green;
 }
