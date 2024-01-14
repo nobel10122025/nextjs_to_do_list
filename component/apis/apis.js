@@ -24,3 +24,10 @@ export const deleteItem = async (id) => {
     method: "DELETE"
   });
 };
+
+export const deleteCompletedItems = async (payload) => {
+  await fetch(`api/task`, {
+    method: "DELETE",
+    body: JSON.stringify(payload)
+  });
+}

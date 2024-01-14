@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 
-import { updatedCurrentItem, createItems, deleteItem, getSavedItems } from '@component/apis/apis';
+import { updatedCurrentItem, createItems, deleteItem, getSavedItems, deleteCompletedItems } from '@component/apis/apis';
 
 //Components
 import MenuBar from '@component/menu-bar/MenuBar';
@@ -91,6 +91,11 @@ function ItemHolder() {
     }
 
     const clearCompletedItems = () => {
+        const idsToDelete = items.reduce((reqArray ,currentItem) => {
+            if (currentItem.isCompleted) reqArray.push(currentItem.id)
+            return reqArray
+        }, [])
+        deleteCompletedItems({ids : idsToDelete})
         const updatedItems = items.filter((currentItem) => !currentItem.isCompleted)
         setItems(updatedItems)
         setFilteredItems(updatedItems)
