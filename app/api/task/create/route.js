@@ -9,6 +9,7 @@ export const POST = async (req, res) => {
     const createdData = await Task.create({
       task_name: name,
       is_completed: isCompleted,
+      is_completed_yesterday: false,
       user_id: userId,
     });
     return new Response(JSON.stringify(createdData), { status: 201 });
