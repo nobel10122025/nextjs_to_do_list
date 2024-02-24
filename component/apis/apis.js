@@ -21,13 +21,20 @@ export const updatedCurrentItem = async (id, payload) => {
 
 export const deleteItem = async (id) => {
   await fetch(`api/task/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
   });
 };
 
 export const deleteCompletedItems = async (payload) => {
   await fetch(`api/task`, {
     method: "DELETE",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
-}
+};
+
+export const isLightTheme = async (id, payload) => {
+  await fetch(`api/user/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+};

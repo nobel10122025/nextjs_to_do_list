@@ -3,6 +3,7 @@ import '@/globalStyles.css'
 import Provider from '@component/Provider/Provider'
 
 import { Open_Sans } from "next/font/google"
+
 export const metadata = {
     title: 'To do list',
     description: 'a simple todo list app'

@@ -41,7 +41,8 @@
     justify-content: center;
     align-items: center;
     border-radius: 4px;
-    height: 40px
+    height: 40px,
+
 }
 .itemContainer {
     display: flex;
@@ -115,4 +116,28 @@
 }
 .editIcon:hover {
     color: green;
+}
+@media(max-width:800px){
+    .itemHolder {
+        width: 63%;
+    }
+    .input {
+        width: 63%;
+    }
+}
+@media (max-width:600px) {
+    .itemHolder {
+        width: 80%;
+    }
+    .input {
+        width: 80%;
+    }
+    .tabContainer {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    .controls {
+        width: 80%
+    }
 }

@@ -12,6 +12,10 @@ const userSchema = new Schema({
     },
     image: {
         type: String
+    },
+    is_light_mode: {
+        type: Boolean,
+        required: [true, "theme is required!"]
     }
 })
 
