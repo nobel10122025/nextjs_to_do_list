@@ -118,23 +118,23 @@ function ItemHolder() {
 
     return (
         <MediaContextProvider>
-            <div className="root">
-                <div className="imageContainer" style={{ background: isLightMode ? 'url("bg-desktop-dark.jpg")' : 'url("bg-desktop-light.jpg")' }}>
+            <div className={`root ${!isLightMode && 'dark'}`}>
+                <div className="imageContainer" style={{ background: isLightMode ? 'url("bg-desktop-light.jpg")' : 'url("bg-desktop-dark.jpg")' }}>
                     {/* <img src="bg-desktop-light.jpg" alt='background-image' className="image" /> */}
                     {session?.user ? <>
                         <MenuBar />
                         <div className="banner">
                             <div className="header">
                                 <span className="heading">TODO</span>
-                                <img    
-                                    src="icons/icon-sun.svg" 
+                                <img
+                                    src={isLightMode ? "icons/icon-moon.svg" : "icons/icon-sun.svg"}
                                     onClick={() => {
                                         isLightTheme(session?.user.id, { is_light_mode: !isLightMode });
                                         setIsLightMode(!isLightMode)
                                     }} />
                             </div>
                             <input
-                                className="input"
+                                className={`input ${!isLightMode && 'dark'}`}
                                 value={enteredData}
                                 onChange={(event) => setEntered(event.target.value)}
                                 onKeyDown={(event) => event.key === "Enter" && addItem()}
@@ -145,7 +145,7 @@ function ItemHolder() {
                             {filteredItems && filteredItems.map((currentItem) => {
                                 const { name, isCompleted, id } = currentItem
                                 return (
-                                    <div className="itemHolder" key={id}>
+                                    <div className={`itemHolder ${!isLightMode && 'dark'}`} key={id}>
                                         <div className="itemNames">
                                             {isCompleted ? <div className="icon" onClick={() => markAtDoneUndone(id, isCompleted)}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9"><path fill="none" stroke="#FFF" strokeWidth="2" d="M1 4.304L3.696 7l6-6" /></svg>
@@ -163,27 +163,27 @@ function ItemHolder() {
                                     </div>
                                 )
                             })}
-                            <div className="itemHolder">
-                                <Media at="sm"><span className='count'>{items.length} items left</span></Media>
-                                <Media at="sm"><span className='clearLink' onClick={clearCompletedItems}>Clear Completed</span></Media>
+                            <div className={`itemHolder ${!isLightMode && 'dark'}`}>
+                                <Media at="sm"><span className={`count ${!isLightMode && 'dark'}`}>{items.length} items left</span></Media>
+                                <Media at="sm"><span className={`clearLink ${!isLightMode && 'dark'}`} onClick={clearCompletedItems}>Clear Completed</span></Media>
                             </div>
-                            {items && items.length !== 0 && <div className='controls'>
+                            {items && items.length !== 0 && <div className={`controls ${!isLightMode && 'dark'}`}>
                                 <Media greaterThan="sm">
-                                    <span className='count'>{items.length} items left</span>
+                                    <span className={`count ${!isLightMode && 'dark'}`}>{items.length} items left</span>
                                 </Media>
                                 <div className='tabContainer'>
-                                    <span className={`tabValue ${activeTab === ALL && "tabActive"}`} onClick={() => onTabSwitch(ALL)}>{ALL}</span>
-                                    <span className={`tabValue ${activeTab === ACTIVE && "tabActive"}`} onClick={() => onTabSwitch(ACTIVE)}>{ACTIVE}</span>
-                                    <span className={`tabValue ${activeTab === COMPLETED && "tabActive"}`} onClick={() => onTabSwitch(COMPLETED)}>{COMPLETED}</span>
+                                    <span className={`tabValue ${activeTab === ALL && "tabActive"} ${!isLightMode && 'dark'}`} onClick={() => onTabSwitch(ALL)}>{ALL}</span>
+                                    <span className={`tabValue ${activeTab === ACTIVE && "tabActive"} ${!isLightMode && 'dark'}`} onClick={() => onTabSwitch(ACTIVE)}>{ACTIVE}</span>
+                                    <span className={`tabValue ${activeTab === COMPLETED && "tabActive"} ${!isLightMode && 'dark'}`} onClick={() => onTabSwitch(COMPLETED)}>{COMPLETED}</span>
                                 </div>
                                 <Media greaterThan="sm">
-                                    <span className='clearLink' onClick={clearCompletedItems}>Clear Completed</span>
+                                    <span className={`clearLink ${!isLightMode && 'dark'}`} onClick={clearCompletedItems}>Clear Completed</span>
                                 </Media>
                             </div>}
                         </div>
                     </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true} />}
                 </div>
-                {session?.user && <span className='subText'>Drag and Drop to reorder the list</span>}
+                {session?.user && <span className={`subText ${!isLightMode && 'dark'}`}>Drag and Drop to reorder the list</span>}
             </div>
         </MediaContextProvider>
     )

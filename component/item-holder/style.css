@@ -4,6 +4,9 @@
     height: 100vh;
     flex-direction: column;
 }
+.root.dark {
+    background-color: #000;
+}
 .imageContainer {
     width: 100%;
     background-repeat: no-repeat !important;
@@ -44,6 +47,10 @@
     height: 40px,
 
 }
+.input.dark {
+    color: #FFF;
+    background-color: #252739;
+}
 .itemContainer {
     display: flex;
     justify-content: center;
@@ -60,6 +67,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+.itemHolder.dark {
+    background-color: #252739;
+    color: #FFF;
 }
 .itemNames {
     display: flex;
@@ -78,6 +89,10 @@
     display: flex;
     justify-content: space-between;
 }
+.controls.dark {
+    background-color: #252739;
+    color: #FFF;
+}
 .tabValue {
     padding:  0px 16px;
     color:  hsl(236, 9%, 61%)
@@ -85,12 +100,25 @@
 .tabActive {
     color: hsl(192, 100%, 67%)
 }
+.tabValue.dark {
+    color: #FFF
+}
 .subText {
    margin-top: 20px;
-   text-align: center
+   text-align: center;
+   color: #000;
+}
+.subText.dark {
+    color: #FFF;
 }
 .count , .clearLink {
     color:  hsl(236, 9%, 61%)
+}
+.count.dark{
+    color: #FFF
+}
+.clearLink.dark {
+    color: #FFF
 }
 .icon {
     background-image: linear-gradient(hsl(192, 100%, 67%), hsl(280, 87%, 65%));
