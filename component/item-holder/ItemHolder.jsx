@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { updatedCurrentItem, createItems, deleteItem, getSavedItems, deleteCompletedItems, isLightTheme } from '@component/apis/apis';
 import { MediaContextProvider, Media } from "@utils/media.js"
 
@@ -27,6 +27,8 @@ function ItemHolder() {
     const [activeTab, setActiveTab] = useState(ALL)
     const [itemId, setItemId] = useState(null)
     const [isLightMode, setIsLightMode] = useState(false)
+    const dragItem = useRef()
+    const dragOverItem = useRef()
 
     useEffect(() => {
         (async () => {
@@ -116,6 +118,24 @@ function ItemHolder() {
         setFilteredItems(updatedItems)
     }
 
+    const dragStart = (e) => {
+        dragItem.current = e.target.id
+    }
+
+    const dragEnter = (e) => {
+        dragOverItem.current = e.currentTarget.id
+    }
+
+    const drop = () => {
+        const copiedItems = [...filteredItems];
+        const dragItemContent = copiedItems[dragItem.current];
+        copiedItems.splice(dragItem.current, 1);
+        copiedItems.splice(dragOverItem.current, 0, dragItemContent);
+        dragItem.current = null;
+        dragOverItem.current = null;
+        setFilteredItems(copiedItems);
+    }
+
     return (
         <MediaContextProvider>
             <div className={`root ${!isLightMode && 'dark'}`}>
@@ -141,11 +161,19 @@ function ItemHolder() {
                             />
                         </div>
                         <div className="itemContainer">
-                            {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false} />}
-                            {filteredItems && filteredItems.map((currentItem) => {
+                            {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false} isLightMode={isLightMode} />}
+                            {filteredItems && filteredItems.map((currentItem, index) => {
                                 const { name, isCompleted, id } = currentItem
                                 return (
-                                    <div className={`itemHolder ${!isLightMode && 'dark'}`} key={id}>
+                                    <div
+                                        className={`itemHolder ${!isLightMode && 'dark'}`}
+                                        key={index}
+                                        draggable
+                                        onDragStart={(e) => dragStart(e)}
+                                        onDragEnter={(e) => dragEnter(e)}
+                                        onDragEnd={drop}
+                                        id={index}
+                                    >
                                         <div className="itemNames">
                                             {isCompleted ? <div className="icon" onClick={() => markAtDoneUndone(id, isCompleted)}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9"><path fill="none" stroke="#FFF" strokeWidth="2" d="M1 4.304L3.696 7l6-6" /></svg>
@@ -181,7 +209,7 @@ function ItemHolder() {
                                 </Media>
                             </div>}
                         </div>
-                    </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true} />}
+                    </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true} isLightMode={isLightMode} />}
                 </div>
                 {session?.user && <span className={`subText ${!isLightMode && 'dark'}`}>Drag and Drop to reorder the list</span>}
             </div>

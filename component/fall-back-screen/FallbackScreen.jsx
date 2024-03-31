@@ -5,9 +5,9 @@ import './style.css'
 function FallbackScreen({ providers, title, showButton }) {
     return (
         <div className='fallback-container'>
-            <div className='fallback-root'>
+            <div className={`fallback-root ${!isLightMode && 'dark'}`}>
                 <img src='fallback-image.png' alt='fallback-image' className='fallback-image' />
-                <div className='fallback-title'>{title}</div>
+                <div className={`fallback-title ${!isLightMode && 'dark'}`}>{title}</div>
                 {providers && Object.values(providers).map((currentProvider) => (
                     showButton && <button
                         className='sign-in-button'
