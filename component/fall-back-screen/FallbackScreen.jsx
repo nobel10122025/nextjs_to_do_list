@@ -2,9 +2,9 @@
 import { signIn } from 'next-auth/react'
 import './style.css'
 
-function FallbackScreen({ providers, title, showButton }) {
+function FallbackScreen({ providers, title, showButton, isLightMode, noItemsPresent }) {
     return (
-        <div className='fallback-container'>
+        <div className={`fallback-container ${noItemsPresent && 'fallback-container-small'}`}>
             <div className={`fallback-root ${!isLightMode && 'dark'}`}>
                 <img src='fallback-image.png' alt='fallback-image' className='fallback-image' />
                 <div className={`fallback-title ${!isLightMode && 'dark'}`}>{title}</div>

@@ -6,6 +6,10 @@
     height: 100vh
 }
 
+.fallback-container-small {
+    height: unset
+}
+
 .fallback-root {
     width: 50%;
     height: 50vh;

@@ -30,6 +30,8 @@ function ItemHolder() {
     const dragItem = useRef()
     const dragOverItem = useRef()
 
+    console.log("items items", filteredItems)
+
     useEffect(() => {
         (async () => {
             const response = await getProviders()
@@ -161,7 +163,13 @@ function ItemHolder() {
                             />
                         </div>
                         <div className="itemContainer">
-                            {items && items.length === 0 && <FallbackScreen providers={providers} title={"Opps! please add a task to be done..."} showButton={false} isLightMode={isLightMode} />}
+                            {items && items.length === 0 && <FallbackScreen
+                                providers={providers}
+                                title={"Opps! please add a task to be done..."}
+                                showButton={false}
+                                isLightMode={isLightMode}
+                                noItemsPresent={items && items.length == 0}
+                            />}
                             {filteredItems && filteredItems.map((currentItem, index) => {
                                 const { name, isCompleted, id } = currentItem
                                 return (
@@ -191,10 +199,10 @@ function ItemHolder() {
                                     </div>
                                 )
                             })}
-                            <div className={`itemHolder ${!isLightMode && 'dark'}`}>
+                            {items && items.length !== 0 && <div className={`itemHolder ${!isLightMode && 'dark'}`}>
                                 <Media at="sm"><span className={`count ${!isLightMode && 'dark'}`}>{items.length} items left</span></Media>
                                 <Media at="sm"><span className={`clearLink ${!isLightMode && 'dark'}`} onClick={clearCompletedItems}>Clear Completed</span></Media>
-                            </div>
+                            </div>}
                             {items && items.length !== 0 && <div className={`controls ${!isLightMode && 'dark'}`}>
                                 <Media greaterThan="sm">
                                     <span className={`count ${!isLightMode && 'dark'}`}>{items.length} items left</span>
@@ -209,7 +217,12 @@ function ItemHolder() {
                                 </Media>
                             </div>}
                         </div>
-                    </> : providers && Object.keys(providers) && <FallbackScreen providers={providers} title={"Please sign in to save your checklist"} showButton={true} isLightMode={isLightMode} />}
+                    </> : providers && Object.keys(providers) && <FallbackScreen
+                        providers={providers}
+                        title={"Please sign in to save your checklist"}
+                        showButton={true}
+                        isLightMode={isLightMode}
+                    />}
                 </div>
                 {session?.user && <span className={`subText ${!isLightMode && 'dark'}`}>Drag and Drop to reorder the list</span>}
             </div>
